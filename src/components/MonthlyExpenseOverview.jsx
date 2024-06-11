@@ -1,13 +1,29 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 const MonthlyExpenseOverview = () => {
+  const [expenses, setExpenses] = useState(null);
   const selectedMonth = useSelector((state) => state.expenses.selectedMonth);
-  const expenses = useSelector((state) => state.expenses.expenses);
-  const filteredExpenses = expenses.filter(
-    (expense) => parseInt(expense.date.substring(5, 7), 10) === selectedMonth
-  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/expenses");
+        setExpenses(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const filteredExpenses = expenses
+    ? expenses.filter((expense) => expense.month === selectedMonth)
+    : [];
 
   return (
     <ExpenseListSection>
