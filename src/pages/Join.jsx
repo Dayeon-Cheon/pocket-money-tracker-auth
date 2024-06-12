@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 
 function Join() {
-  const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
 
   const handleJoin = () => {
-    if (username.trim().length < 4 || username.trim().length > 10) {
+    if (id.trim().length < 4 || id.trim().length > 10) {
       alert("아이디를 4~10글자로 작성해 주세요.");
       return;
     }
@@ -28,9 +28,9 @@ function Join() {
         <div>
           <input
             type="text"
-            value={username}
+            value={id}
             onChange={(e) => {
-              setUsername(e.target.value);
+              setId(e.target.value);
             }}
             placeholder="아이디를 입력하세요."
           ></input>

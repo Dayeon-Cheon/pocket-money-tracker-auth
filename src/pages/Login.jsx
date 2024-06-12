@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 
 function Login() {
-  const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (username.trim() === "") {
+    if (id.trim() === "") {
       alert("아이디를 입력하세요.");
       return;
     }
@@ -23,9 +23,9 @@ function Login() {
         <div>
           <input
             type="text"
-            value={username}
+            value={id}
             onChange={(e) => {
-              setUsername(e.target.value);
+              setId(e.target.value);
             }}
             placeholder="아이디를 입력하세요."
           ></input>
