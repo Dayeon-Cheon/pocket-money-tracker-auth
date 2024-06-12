@@ -33,7 +33,7 @@ function Login() {
       const data = response.data;
       if (data.success) {
         login(data.accessToken);
-        navigate("/");
+        navigate("/mypage");
       } else {
         alert("로그인에 실패하였습니다.");
       }

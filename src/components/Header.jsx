@@ -19,6 +19,7 @@ const Header = () => {
     <HeaderContainer>
       <h1>
         <TitleLink to="/">가계부</TitleLink>
+        <NavLink to="/mypage">마이페이지</NavLink>
       </h1>
       <StyledNav>
         {isAuthenticated ? (
