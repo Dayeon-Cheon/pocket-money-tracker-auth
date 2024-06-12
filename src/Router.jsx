@@ -1,5 +1,11 @@
 import { useContext } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import Header from "./components/Header.jsx";
 import Home from "./pages/Home.jsx";
 import Join from "./pages/Join.jsx";
@@ -18,17 +24,34 @@ const PublicRoute = ({ element: Element, ...rest }) => {
   return !isAuthenticated ? <Element {...rest} /> : <Navigate to="/" />;
 };
 
+const Layout = ({ children }) => {
+  const location = useLocation();
+  const showHeaderPaths = ["/", "/mypage"];
+  const showHeader =
+    showHeaderPaths.includes(location.pathname) ||
+    location.pathname.startsWith("/detail/");
+
+  console.log(showHeader);
+  return (
+    <>
+      {showHeader && <Header />}
+      {children}
+    </>
+  );
+};
+
 const Router = () => {
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/join" element={<PublicRoute element={Join} />} />
-        <Route path="/login" element={<PublicRoute element={Login} />} />
-        <Route path="/mypage" element={<PrivateRoute element={MyPage} />} />
-        <Route path="/detail/:id" element={<Detail />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<PrivateRoute element={Home} />} />
+          <Route path="/join" element={<PublicRoute element={Join} />} />
+          <Route path="/login" element={<PublicRoute element={Login} />} />
+          <Route path="/mypage" element={<PrivateRoute element={MyPage} />} />
+          <Route path="/detail/:id" element={<Detail />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 };
