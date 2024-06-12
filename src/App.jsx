@@ -1,11 +1,14 @@
 import GlobalStyle from "./GlobalStyle";
 import Router from "./Router";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <>
-      <GlobalStyle />
-      <Router />
+      <AuthProvider>
+        <GlobalStyle />
+        <Router />
+      </AuthProvider>
     </>
   );
 }
