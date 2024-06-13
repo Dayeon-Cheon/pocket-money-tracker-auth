@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { getUserInfo } from "../api/auth";
-import { getExpense, putExpense } from "../api/expense";
+import { getExpense, putExpense, deleteExpense } from "../api/expense";
 import styled from "styled-components";
 
 const Detail = () => {
@@ -44,6 +44,14 @@ const Detail = () => {
     },
   });
 
+  const mutationDelete = useMutation({
+    mutationFn: deleteExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["expenses"]);
+      navigate("/");
+    },
+  });
+
   const handleUpdateExpense = (e) => {
     e.preventDefault();
 
@@ -74,14 +82,10 @@ const Detail = () => {
     };
 
     mutationEdit.mutate(updatedExpense);
-
-    navigate(-1);
   };
 
   const handleDeleteExpense = () => {
-    // dispatch(removeExpense(expense.id));
-
-    navigate(-1);
+    mutationDelete.mutate(id);
   };
 
   const handleGoBack = () => {

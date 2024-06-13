@@ -54,3 +54,14 @@ export const putExpense = async (updatedExpense) => {
     throw error;
   }
 };
+
+// 지출 데이터 삭제하기
+export const deleteExpense = async (id) => {
+  try {
+    const response = await axios.delete(`${JSON_SERVER_HOST}/expenses/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
