@@ -11,7 +11,7 @@ const ExpenseForm = () => {
   const amountInputRef = useRef(null);
   const descriptionInputRef = useRef(null);
 
-  const queryClient = new useQueryClient();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const {
