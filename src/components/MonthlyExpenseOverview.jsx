@@ -1,28 +1,31 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getExpenses } from "../api/expense";
 import styled from "styled-components";
-import axios from "axios";
 
 const MonthlyExpenseOverview = () => {
-  const [expenses, setExpenses] = useState(null);
   const selectedMonth = useSelector((state) => state.expenses.selectedMonth);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get("http://localhost:4000/expenses");
-        setExpenses(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const {
+    data: expenses = [],
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ["expenses"], queryFn: getExpenses });
 
-    fetchData();
-  }, []);
+  if (isLoading) {
+    <div>로딩 중입니다.</div>;
+  }
+
+  if (error) {
+    <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
+  }
 
   const filteredExpenses = expenses
-    ? expenses.filter((expense) => expense.month === selectedMonth)
+    ? expenses.filter(
+        (expense) => parseInt(expense.date.split("-")[1]),
+        10 === selectedMonth
+      )
     : [];
 
   return (
