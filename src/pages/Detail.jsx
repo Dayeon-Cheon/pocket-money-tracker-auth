@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getExpense } from "../api/expense";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { getUserInfo } from "../api/auth";
+import { getExpense, putExpense } from "../api/expense";
 import styled from "styled-components";
 
 const Detail = () => {
   let { id } = useParams();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const {
+    data: userInfo = [],
+    userIsLoading,
+    userError,
+  } = useQuery({ queryKey: ["user"], queryFn: getUserInfo });
+
+  const {
     data: selectedExpense,
-    isLoading,
-    error,
+    expenseIsLoading,
+    expenseError,
   } = useQuery({ queryKey: ["expenses", id], queryFn: getExpense });
 
   const [date, setDate] = useState("");
@@ -23,10 +31,18 @@ const Detail = () => {
     if (selectedExpense) {
       setDate(selectedExpense.date);
       setItem(selectedExpense.item);
-      setAmount(selectedExpense.amount);
+      setAmount(String(selectedExpense.amount));
       setDescription(selectedExpense.description);
     }
   }, [selectedExpense]);
+
+  const mutationEdit = useMutation({
+    mutationFn: putExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["expenses"]);
+      navigate("/");
+    },
+  });
 
   const handleUpdateExpense = (e) => {
     e.preventDefault();
@@ -42,20 +58,22 @@ const Detail = () => {
       return;
     }
 
-    if (isNaN(amount)) {
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount)) {
       alert("금액은 숫자만 입력해 주세요.");
       return;
     }
 
     const updatedExpense = {
-      id: selectedExpense.id,
+      id,
       date,
       item,
-      amount,
+      amount: parsedAmount,
       description,
+      userId: userInfo.id,
     };
 
-    // dispatch(updateExpense(updatedExpense));
+    mutationEdit.mutate(updatedExpense);
 
     navigate(-1);
   };
@@ -70,11 +88,11 @@ const Detail = () => {
     navigate(-1);
   };
 
-  if (isLoading) {
+  if (userIsLoading || expenseIsLoading) {
     <div>로딩 중입니다.</div>;
   }
 
-  if (error) {
+  if (userError || expenseError) {
     <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
   }
 

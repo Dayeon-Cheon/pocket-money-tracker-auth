@@ -39,3 +39,18 @@ export const postExpense = async (newExpense) => {
     throw error;
   }
 };
+
+// 지출 데이터 수정하기
+export const putExpense = async (updatedExpense) => {
+  const { id, ...rest } = updatedExpense;
+  try {
+    const response = await axios.put(
+      `${JSON_SERVER_HOST}/expenses/${id}`,
+      rest
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
