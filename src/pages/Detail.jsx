@@ -1,20 +1,23 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import { useDispatch } from "react-redux";
-import { updateExpense, removeExpense } from "../redux/slices/expensesSlice";
+import { useQuery } from "@tanstack/react-query";
+import { getExpense } from "../api/expense";
 import styled from "styled-components";
 
 const Detail = () => {
-  const dispatch = useDispatch();
-
-  const location = useLocation();
+  let { id } = useParams();
   const navigate = useNavigate();
-  const expense = location.state;
 
-  const dateInputRef = useRef(expense.date);
-  const itemInputRef = useRef(expense.item);
-  const amountInputRef = useRef(expense.amount);
-  const descriptionInputRef = useRef(expense.description);
+  const {
+    data: selectedExpense,
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ["expenses", id], queryFn: getExpense });
+
+  const dateInputRef = useRef(selectedExpense.date);
+  const itemInputRef = useRef(selectedExpense.item);
+  const amountInputRef = useRef(selectedExpense.amount);
+  const descriptionInputRef = useRef(selectedExpense.description);
 
   const handleUpdateExpense = (e) => {
     e.preventDefault();
@@ -48,13 +51,13 @@ const Detail = () => {
       description,
     };
 
-    dispatch(updateExpense(updatedExpense));
+    // dispatch(updateExpense(updatedExpense));
 
     navigate(-1);
   };
 
   const handleDeleteExpense = () => {
-    dispatch(removeExpense(expense.id));
+    // dispatch(removeExpense(expense.id));
 
     navigate(-1);
   };
@@ -62,6 +65,14 @@ const Detail = () => {
   const handleGoBack = () => {
     navigate(-1);
   };
+
+  if (isLoading) {
+    <div>로딩 중입니다.</div>;
+  }
+
+  if (error) {
+    <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
+  }
 
   return (
     <InputFormSection>
@@ -71,28 +82,28 @@ const Detail = () => {
           ref={dateInputRef}
           id="date"
           type="text"
-          defaultValue={expense.date}
+          defaultValue={selectedExpense.date}
         ></ExpenseInput>
         <label htmlFor="item">항목</label>
         <ExpenseInput
           ref={itemInputRef}
           id="item"
           type="text"
-          defaultValue={expense.item}
+          defaultValue={selectedExpense.item}
         ></ExpenseInput>
         <label htmlFor="amount">금액</label>
         <ExpenseInput
           ref={amountInputRef}
           id="amount"
           type="text"
-          defaultValue={expense.amount}
+          defaultValue={selectedExpense.amount}
         ></ExpenseInput>
         <label htmlFor="description">내용</label>
         <ExpenseInput
           ref={descriptionInputRef}
           id="description"
           type="text"
-          defaultValue={expense.description}
+          defaultValue={selectedExpense.description}
         ></ExpenseInput>
       </FormDiv>
       <ButtonDiv>
