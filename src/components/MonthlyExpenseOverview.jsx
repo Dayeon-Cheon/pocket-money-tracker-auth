@@ -15,8 +15,7 @@ const MonthlyExpenseOverview = () => {
 
   const filteredExpenses = expenses
     ? expenses.filter(
-        (expense) => parseInt(expense.date.split("-")[1]),
-        10 === selectedMonth
+        (expense) => parseInt(expense.date.split("-")[1], 10) === selectedMonth
       )
     : [];
 
