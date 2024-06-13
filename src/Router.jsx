@@ -31,7 +31,6 @@ const Layout = ({ children }) => {
     showHeaderPaths.includes(location.pathname) ||
     location.pathname.startsWith("/detail/");
 
-  console.log(showHeader);
   return (
     <>
       {showHeader && <Header />}
