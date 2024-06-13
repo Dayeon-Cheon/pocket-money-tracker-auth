@@ -13,6 +13,13 @@ const MonthlyExpenseOverview = () => {
     error,
   } = useQuery({ queryKey: ["expenses"], queryFn: getExpenses });
 
+  const filteredExpenses = expenses
+    ? expenses.filter(
+        (expense) => parseInt(expense.date.split("-")[1]),
+        10 === selectedMonth
+      )
+    : [];
+
   if (isLoading) {
     <div>로딩 중입니다.</div>;
   }
@@ -20,13 +27,6 @@ const MonthlyExpenseOverview = () => {
   if (error) {
     <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
   }
-
-  const filteredExpenses = expenses
-    ? expenses.filter(
-        (expense) => parseInt(expense.date.split("-")[1]),
-        10 === selectedMonth
-      )
-    : [];
 
   return (
     <ExpenseListSection>
@@ -48,6 +48,7 @@ const MonthlyExpenseOverview = () => {
                       {expense.description.length > 50
                         ? expense.description.slice(0, 47) + "..."
                         : expense.description}
+                      &nbsp;(by {expense.userId})
                     </ExpenseContentSpan>
                   </ExpenseLeftDiv>
                   <ExpenseRightDiv>
