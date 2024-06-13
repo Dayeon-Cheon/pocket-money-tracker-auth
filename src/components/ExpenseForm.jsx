@@ -1,15 +1,15 @@
-import { useRef } from "react";
-import { postExpense } from "../api/expense";
-import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { getUserInfo } from "../api/auth";
+import { postExpense } from "../api/expense";
 import styled from "styled-components";
 
 const ExpenseForm = () => {
-  const dateInputRef = useRef(null);
-  const itemInputRef = useRef(null);
-  const amountInputRef = useRef(null);
-  const descriptionInputRef = useRef(null);
+  const [date, setDate] = useState("");
+  const [item, setItem] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -31,17 +31,7 @@ const ExpenseForm = () => {
   const handleSubmitExpense = (e) => {
     e.preventDefault();
 
-    const date = dateInputRef.current.value;
-    const item = itemInputRef.current.value;
-    const amount = parseFloat(amountInputRef.current.value);
-    const description = descriptionInputRef.current.value;
-
-    if (
-      !date.trim() ||
-      !item.trim() ||
-      !amountInputRef.current.value.trim() ||
-      !description.trim()
-    ) {
+    if (!date.trim() || !item.trim() || !amount.trim() || !description.trim()) {
       alert("모든 항목을 입력해 주세요.");
       return;
     }
@@ -52,7 +42,8 @@ const ExpenseForm = () => {
       return;
     }
 
-    if (isNaN(amount)) {
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount)) {
       alert("금액은 숫자만 입력해 주세요.");
       return;
     }
@@ -61,14 +52,17 @@ const ExpenseForm = () => {
       id: crypto.randomUUID(),
       date,
       item,
-      amount,
+      amount: parsedAmount,
       description,
       userId: userInfo.id,
     };
 
     mutation.mutate(newExpense);
 
-    e.target.reset();
+    setDate("");
+    setItem("");
+    setAmount("");
+    setDescription("");
   };
 
   if (isLoading) {
@@ -84,28 +78,32 @@ const ExpenseForm = () => {
       <form onSubmit={handleSubmitExpense}>
         <FormDiv>
           <ExpenseInput
-            ref={dateInputRef}
             id="date"
             type="text"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
             placeholder="날짜 (YYYY-MM-DD)"
           ></ExpenseInput>
           <ExpenseInput
-            ref={itemInputRef}
             id="item"
             type="text"
+            value={item}
+            onChange={(e) => setItem(e.target.value)}
             placeholder="지출 항목"
           ></ExpenseInput>
           <ExpenseInput
-            ref={amountInputRef}
             id="amount"
             type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder="지출 금액"
           ></ExpenseInput>
           <ExpenseInput
-            ref={descriptionInputRef}
             name="description"
             id="description"
             type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="지출 내용"
           ></ExpenseInput>
           <SaveButton type="submit">저장</SaveButton>

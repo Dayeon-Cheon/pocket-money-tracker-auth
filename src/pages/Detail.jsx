@@ -1,5 +1,5 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getExpense } from "../api/expense";
 import styled from "styled-components";
@@ -14,18 +14,22 @@ const Detail = () => {
     error,
   } = useQuery({ queryKey: ["expenses", id], queryFn: getExpense });
 
-  const dateInputRef = useRef(selectedExpense.date);
-  const itemInputRef = useRef(selectedExpense.item);
-  const amountInputRef = useRef(selectedExpense.amount);
-  const descriptionInputRef = useRef(selectedExpense.description);
+  const [date, setDate] = useState("");
+  const [item, setItem] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    if (selectedExpense) {
+      setDate(selectedExpense.date);
+      setItem(selectedExpense.item);
+      setAmount(selectedExpense.amount);
+      setDescription(selectedExpense.description);
+    }
+  }, [selectedExpense]);
 
   const handleUpdateExpense = (e) => {
     e.preventDefault();
-
-    const date = dateInputRef.current.value;
-    const item = itemInputRef.current.value;
-    const amount = amountInputRef.current.value;
-    const description = descriptionInputRef.current.value;
 
     if (!date.trim() || !item.trim() || !amount.trim() || !description.trim()) {
       alert("모든 항목을 입력해 주세요.");
@@ -44,7 +48,7 @@ const Detail = () => {
     }
 
     const updatedExpense = {
-      id: expense.id,
+      id: selectedExpense.id,
       date,
       item,
       amount,
@@ -79,31 +83,31 @@ const Detail = () => {
       <FormDiv>
         <label htmlFor="date">날짜</label>
         <ExpenseInput
-          ref={dateInputRef}
           id="date"
           type="text"
-          defaultValue={selectedExpense.date}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
         ></ExpenseInput>
         <label htmlFor="item">항목</label>
         <ExpenseInput
-          ref={itemInputRef}
           id="item"
           type="text"
-          defaultValue={selectedExpense.item}
+          value={item}
+          onChange={(e) => setItem(e.target.value)}
         ></ExpenseInput>
         <label htmlFor="amount">금액</label>
         <ExpenseInput
-          ref={amountInputRef}
           id="amount"
           type="text"
-          defaultValue={selectedExpense.amount}
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
         ></ExpenseInput>
         <label htmlFor="description">내용</label>
         <ExpenseInput
-          ref={descriptionInputRef}
           id="description"
           type="text"
-          defaultValue={selectedExpense.description}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         ></ExpenseInput>
       </FormDiv>
       <ButtonDiv>
