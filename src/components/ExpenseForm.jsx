@@ -1,15 +1,32 @@
 import { useRef } from "react";
-import { useDispatch } from "react-redux";
-import { addExpense } from "../redux/slices/expensesSlice";
+import { postExpense } from "../api/expense";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { getUserInfo } from "../api/auth";
 import styled from "styled-components";
 
 const ExpenseForm = () => {
-  const dispatch = useDispatch();
-
   const dateInputRef = useRef(null);
   const itemInputRef = useRef(null);
   const amountInputRef = useRef(null);
   const descriptionInputRef = useRef(null);
+
+  const queryClient = new useQueryClient();
+  const navigate = useNavigate();
+
+  const {
+    data: userInfo = [],
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ["user"], queryFn: getUserInfo });
+
+  const mutation = useMutation({
+    mutationFn: postExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["expenses"]);
+      navigate(0);
+    },
+  });
 
   const handleSubmitExpense = (e) => {
     e.preventDefault();
@@ -46,12 +63,21 @@ const ExpenseForm = () => {
       item,
       amount,
       description,
+      userId: userInfo.id,
     };
 
-    dispatch(addExpense(newExpense));
+    mutation.mutate(newExpense);
 
     e.target.reset();
   };
+
+  if (isLoading) {
+    <div>로딩 중입니다.</div>;
+  }
+
+  if (error) {
+    <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
+  }
 
   return (
     <InputFormSection>

@@ -12,3 +12,17 @@ export const getExpenses = async () => {
     throw error;
   }
 };
+
+// 지출 데이터 등록하기
+export const postExpense = async (newExpense) => {
+  try {
+    const response = await axios.post(
+      `${JSON_SERVER_HOST}/expenses`,
+      newExpense
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
