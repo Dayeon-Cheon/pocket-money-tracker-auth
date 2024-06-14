@@ -17,6 +17,20 @@ export const join = async ({ id, password, nickname }) => {
   }
 };
 
+// 로그인
+export const userLogin = async ({ id, password }) => {
+  try {
+    const response = await axios.post(`${JSON_SERVER_HOST}/login`, {
+      id,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 // 로그인한 유저 데이터 받아오기
 export const getUserInfo = async () => {
   try {

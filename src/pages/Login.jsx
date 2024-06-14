@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { userLogin } from "../api/auth";
 import { AuthContext } from "../context/AuthContext";
 
 function Login() {
@@ -23,15 +23,8 @@ function Login() {
     }
 
     try {
-      const response = await axios.post(
-        "https://moneyfulpublicpolicy.co.kr/login",
-        {
-          id,
-          password,
-        }
-      );
-      const data = response.data;
-      if (data.success) {
+      const data = await userLogin({ id, password });
+      if (data && data.accessToken) {
         login(data.accessToken);
         navigate("/");
       } else {
@@ -39,7 +32,6 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
-      alert("로그인에 실패하였습니다.");
     }
   };
 
