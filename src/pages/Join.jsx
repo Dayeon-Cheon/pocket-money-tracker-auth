@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import { join } from "../api/auth";
 
 function Join() {
   const [id, setId] = useState("");
@@ -25,23 +25,12 @@ function Join() {
     }
 
     try {
-      const response = await axios.post(
-        "https://moneyfulpublicpolicy.co.kr/register",
-        {
-          id,
-          password,
-          nickname,
-        }
-      );
-      const data = response.data;
-      if (data.success) {
-        navigate("/login");
-      } else {
-        alert("회원가입에 실패하였습니다.");
-      }
+      await join({ id, password, nickname });
+      alert("회원가입이 완료되었습니다.");
+      navigate("/login");
     } catch (error) {
       console.error(error);
-      alert("회원가입에 실패하였습니다.");
+      throw error;
     }
   };
 

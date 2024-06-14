@@ -2,6 +2,21 @@ import axios from "axios";
 
 const JSON_SERVER_HOST = "https://moneyfulpublicpolicy.co.kr";
 
+// 회원가입
+export const join = async ({ id, password, nickname }) => {
+  try {
+    const response = await axios.post(`${JSON_SERVER_HOST}/register`, {
+      id,
+      password,
+      nickname,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 // 로그인한 유저 데이터 받아오기
 export const getUserInfo = async () => {
   try {
