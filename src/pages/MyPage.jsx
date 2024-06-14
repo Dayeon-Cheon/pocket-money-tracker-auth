@@ -1,79 +1,41 @@
-import { useEffect, useState, useContext, useRef } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { getUserInfo, updateProfile } from "../api/auth";
 
 const MyPage = () => {
-  const [userInfo, setUserInfo] = useState(null);
   const [newNickname, setNewNickname] = useState("");
-  const { isAuthenticated } = useContext(AuthContext);
+  const [newAvatar, setNewAvatar] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-    } else {
-      const fetchData = async () => {
-        try {
-          const token = localStorage.getItem("accessToken");
-          const response = await axios.get(
-            "https://moneyfulpublicpolicy.co.kr/user",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setUserInfo(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchData();
-    }
-  }, [isAuthenticated, navigate]);
+  const {
+    data: userInfo = [],
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ["user"], queryFn: getUserInfo });
 
-  const handleNicknameChange = async (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
 
-    if (newNickname.trim().length < 1 || newNickname.trim().length > 10) {
-      alert("닉네임을 1~10글자로 작성해 주세요.");
-      return;
-    }
+    const formData = new FormData();
+    formData.append("nickname", newNickname);
+    formData.append("avatar", newAvatar);
 
     try {
-      const token = localStorage.getItem("accessToken");
-
-      const response = await axios.patch(
-        "https://moneyfulpublicpolicy.co.kr/profile",
-        { nickname: newNickname },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.data.success) {
-        setUserInfo((prevState) => ({
-          ...prevState,
-          nickname: response.data.nickname,
-        }));
-        alert("닉네임이 변경되었습니다.");
-        setNewNickname("");
-      } else {
-        alert("닉네임 변경에 실패했습니다.");
-      }
+      await updateProfile(formData);
+      navigate("/");
     } catch (error) {
       console.error(error);
-      alert("닉네임 변경에 실패했습니다.");
+      throw error;
     }
   };
 
-  if (!userInfo) {
-    return <div>로딩 중...</div>;
+  if (isLoading) {
+    <div>로딩 중입니다.</div>;
+  }
+
+  if (error) {
+    <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
   }
 
   return (
@@ -82,12 +44,17 @@ const MyPage = () => {
       <p>아이디: {userInfo.id}</p>
       <p>닉네임: {userInfo.nickname}</p>
 
-      <form onSubmit={handleNicknameChange}>
+      <form onSubmit={handleUpdateProfile}>
         <input
           type="text"
           value={newNickname}
           onChange={(e) => setNewNickname(e.target.value)}
           placeholder="새로운 닉네임을 입력해 주세요."
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setNewAvatar(e.target.files[0])}
         />
         <button type="submit">변경</button>
       </form>

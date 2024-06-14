@@ -17,3 +17,24 @@ export const getUserInfo = async () => {
     throw error;
   }
 };
+
+// 유저 프로필 업데이트
+export const updateProfile = async (formData) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.patch(
+      `${JSON_SERVER_HOST}/profile`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
