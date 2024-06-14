@@ -1,16 +1,24 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
+import { getUserInfo } from "../api/auth";
 import { getExpenses } from "../api/expense";
 import styled from "styled-components";
 
 const MonthlyExpenseOverview = () => {
   const selectedMonth = useSelector((state) => state.expenses.selectedMonth);
+  const navigate = useNavigate();
+
+  const {
+    data: userInfo = [],
+    userIsLoading,
+    userError,
+  } = useQuery({ queryKey: ["user"], queryFn: getUserInfo });
 
   const {
     data: expenses = [],
-    isLoading,
-    error,
+    expensesIsLoading,
+    expensesError,
   } = useQuery({ queryKey: ["expenses"], queryFn: getExpenses });
 
   const filteredExpenses = expenses
@@ -19,11 +27,19 @@ const MonthlyExpenseOverview = () => {
       )
     : [];
 
-  if (isLoading) {
+  const handleClick = (expense) => {
+    if (expense.userId !== userInfo.id) {
+      alert("본인이 작성한 지출에만 접근할 수 있습니다.");
+    } else {
+      navigate(`/detail/${expense.id}`, { state: expense });
+    }
+  };
+
+  if (userIsLoading || expensesIsLoading) {
     <div>로딩 중입니다.</div>;
   }
 
-  if (error) {
+  if (userError || expensesError) {
     <div>에러가 발생했습니다. 다시 시도해 주세요.</div>;
   }
 
@@ -38,7 +54,7 @@ const MonthlyExpenseOverview = () => {
           ) : (
             filteredExpenses.map((expense) => (
               <ExpenseListItem key={expense.id}>
-                <ExpenseItemLink to={`/detail/${expense.id}`} state={expense}>
+                <ExpenseItemDiv onClick={() => handleClick(expense)}>
                   <ExpenseLeftDiv>
                     <ExpenseDateSpan>{expense.date}</ExpenseDateSpan>
                     <ExpenseContentSpan>
@@ -53,7 +69,7 @@ const MonthlyExpenseOverview = () => {
                   <ExpenseRightDiv>
                     {expense.amount.toLocaleString()}&nbsp;원
                   </ExpenseRightDiv>
-                </ExpenseItemLink>
+                </ExpenseItemDiv>
               </ExpenseListItem>
             ))
           )}
@@ -84,7 +100,7 @@ const ExpenseListItem = styled.li`
   }
 `;
 
-const ExpenseItemLink = styled(Link)`
+const ExpenseItemDiv = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 20px;
