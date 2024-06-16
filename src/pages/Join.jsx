@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { join } from "../api/auth";
+import styled from "styled-components";
 
 function Join() {
   const [id, setId] = useState("");
@@ -36,41 +37,100 @@ function Join() {
 
   return (
     <>
-      <section>
-        <div>회원가입</div>
-        <form onSubmit={handleJoin}>
-          <div>
-            <input
-              type="text"
-              value={id}
-              onChange={(e) => {
-                setId(e.target.value);
-              }}
-              placeholder="아이디를 입력하세요. (4~10글자)"
-            ></input>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              placeholder="비밀번호를 입력하세요. (4~15글자)"
-            ></input>
-            <input
-              type="text"
-              value={nickname}
-              onChange={(e) => {
-                setNickname(e.target.value);
-              }}
-              placeholder="닉네임을 입력하세요. (1~10글자)"
-            ></input>
-            <button type="submit">회원가입</button>
-            <Link to="/login">로그인</Link>
-          </div>
-        </form>
-      </section>
+      <JoinSection>
+        <TitleDiv>회원가입</TitleDiv>
+        <FormDiv onSubmit={handleJoin}>
+          <JoinInput
+            type="text"
+            value={id}
+            onChange={(e) => {
+              setId(e.target.value);
+            }}
+            placeholder="아이디를 입력하세요. (4~10글자)"
+          ></JoinInput>
+          <JoinInput
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+            placeholder="비밀번호를 입력하세요. (4~15글자)"
+          ></JoinInput>
+          <JoinInput
+            type="text"
+            value={nickname}
+            onChange={(e) => {
+              setNickname(e.target.value);
+            }}
+            placeholder="닉네임을 입력하세요. (1~10글자)"
+          ></JoinInput>
+          <JoinButton type="submit">회원가입</JoinButton>
+          <StyledLink to="/login">로그인</StyledLink>
+        </FormDiv>
+      </JoinSection>
     </>
   );
 }
 
 export default Join;
+
+const JoinSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f6f7f7;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 100px;
+`;
+
+const TitleDiv = styled.div`
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #333;
+`;
+
+const FormDiv = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+`;
+
+const JoinInput = styled.input`
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 300px;
+  max-width: 250px;
+  font-size: 16px;
+`;
+
+const JoinButton = styled.button`
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: none;
+  background-color: orange;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  margin-top: 10px;
+  color: orange;
+  text-decoration: none;
+  font-size: 14px;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
