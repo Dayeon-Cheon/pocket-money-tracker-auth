@@ -34,17 +34,20 @@ const Header = () => {
   return (
     <HeaderContainer>
       <h1>
-        <TitleLink to="/">가계부</TitleLink>
-        <NavLink to="/mypage">마이페이지</NavLink>
+        <TitleLink to="/">모두의 가계부</TitleLink>
       </h1>
       <StyledNav>
         {isAuthenticated ? (
           <>
-            <div>
-              <img src={userInfo.avatar} alt="프로필 이미지" />
-            </div>
-            <div>{userInfo.nickname}님 안녕하세요.</div>
-            <button onClick={handleLogout}>로그아웃</button>
+            {userInfo.avatar ? (
+              <NavLink to="/mypage">
+                <AvatarImg src={userInfo.avatar} alt="프로필 이미지" />
+              </NavLink>
+            ) : (
+              <></>
+            )}
+            <NavLink to="/mypage">{userInfo.nickname}님 안녕하세요.</NavLink>
+            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
           </>
         ) : (
           <>
@@ -62,6 +65,7 @@ export default Header;
 const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 `;
 
@@ -74,10 +78,27 @@ const TitleLink = styled(Link)`
 
 const StyledNav = styled.nav`
   display: flex;
+  align-items: center;
   gap: 10px;
+`;
+
+const AvatarImg = styled.img`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 `;
 
 const NavLink = styled(Link)`
   text-decoration: none;
   color: black;
+`;
+
+const LogoutButton = styled.button`
+  border: none;
+  border-radius: 6px;
+  width: 60px;
+  height: 30px;
+  background-color: firebrick;
+  color: white;
+  cursor: pointer;
 `;
