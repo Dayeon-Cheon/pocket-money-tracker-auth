@@ -68,7 +68,7 @@ const LoginSection = styled.section`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f6f7f7;
+  background: white;
   padding: 20px;
   border-radius: 10px;
   margin-top: 100px;
@@ -94,8 +94,7 @@ const LoginInput = styled.input`
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  width: 300px;
-  max-width: 250px;
+  width: 250px;
   font-size: 16px;
 `;
 
